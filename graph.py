@@ -1,7 +1,7 @@
 class Edge:
-    def __init__(self, weight, start_vertex, target_vertex):
+    def __init__(self, distance, start_vertex, target_vertex):
         #the cost between 2 vertex
-        self.weight = weight
+        self.distance = distance
 
         #start vertex
         self.start_vertex = start_vertex

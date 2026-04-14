@@ -28,29 +28,30 @@ nodes = {
 
 queries = load_queries("SmartPathFinder/queries.json")
 
-#Step 2 - add the edges and weight
-nodeA.add_edge(6, nodeB)
-nodeA.add_edge(9, nodeD)
-nodeA.add_edge(10, nodeC)
+#Step 2 - add the edges and distance cost
+#using distance with float(Kilometer) and time(minutes), at the end, convert the time to hours and minutes
+nodeA.add_edge(60.0, nodeB)
+nodeA.add_edge(9.5, nodeD)
+nodeA.add_edge(10.0, nodeC)
 
-nodeB.add_edge(5, nodeD)
-nodeB.add_edge(16, nodeE)
-nodeB.add_edge(13, nodeF)
+nodeB.add_edge(5.0, nodeD)
+nodeB.add_edge(16.0, nodeE)
+nodeB.add_edge(13.0, nodeF)
 
-nodeC.add_edge(6, nodeD)
-nodeC.add_edge(5, nodeH)
-nodeC.add_edge(21, nodeG)
+nodeC.add_edge(6.0, nodeD)
+nodeC.add_edge(5.0, nodeH)
+nodeC.add_edge(21.0, nodeG)
 
-nodeD.add_edge(8, nodeF)
-nodeD.add_edge(7, nodeH)
+nodeD.add_edge(8.0, nodeF)
+nodeD.add_edge(7.0, nodeH)
 
-nodeE.add_edge(10, nodeG)
+nodeE.add_edge(10.0, nodeG)
 
-nodeF.add_edge(4, nodeE)
-nodeF.add_edge(12, nodeG)
+nodeF.add_edge(4.0, nodeE)
+nodeF.add_edge(12.0, nodeG)
 
-nodeH.add_edge(2, nodeF)
-nodeH.add_edge(14, nodeG)
+nodeH.add_edge(2.0, nodeF)
+nodeH.add_edge(14.0, nodeG)
 
 
 for q in queries:

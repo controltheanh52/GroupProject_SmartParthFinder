@@ -30,7 +30,7 @@ class dijkstra:
                 if (start_node.name, target_node.name) in avoid_edges or (target_node.name, start_node.name) in avoid_edges:
                     continue
 
-                new_distance = start_node.min_distance + edge.weight
+                new_distance = start_node.min_distance + edge.distance
 
                 if new_distance < target_node.min_distance:
                     target_node.min_distance = new_distance
