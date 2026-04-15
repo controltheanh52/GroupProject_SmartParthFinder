@@ -73,7 +73,7 @@ for q in queries:
 
     # caculate the dijkstra
     algorithm.caculate_path(start_node, avoid_nodes = avoid_nodes, avoid_edges = avoid_edges)
-
+    
     print(f"Source node: {q['source']}")
     print(f"Destination node: {q['destination']}")
     if avoid_nodes == []:
@@ -87,3 +87,5 @@ for q in queries:
         print(f"Avoid edges: {avoid_edges}")
 
     algorithm.get_shortest_path(end_node)
+
+    #Add a new workflow to print out the fastest time path
