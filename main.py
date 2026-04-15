@@ -1,6 +1,6 @@
 from graph import Node
 from queries_loader import load_queries
-from dijkstraDistanceAlgorithm import dijkstra
+from SmartPathFinder.dijkstraAlgorithm import dijkstra
 
 #Main file
 #testing
@@ -72,7 +72,7 @@ for q in queries:
     algorithm = dijkstra()
 
     # caculate the dijkstra
-    algorithm.caculate(start_node, avoid_nodes = avoid_nodes, avoid_edges = avoid_edges)
+    algorithm.caculate_path(start_node, avoid_nodes = avoid_nodes, avoid_edges = avoid_edges)
 
     print(f"Source node: {q['source']}")
     print(f"Destination node: {q['destination']}")

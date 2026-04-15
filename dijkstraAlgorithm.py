@@ -5,7 +5,7 @@ class dijkstra:
         #using heap data structure
         self.heap = MinHeap()
 
-    def caculate(self, start_vertex, avoid_nodes = [], avoid_edges = []):
+    def caculate_path(self, start_vertex, avoid_nodes = [], avoid_edges = []):
         start_vertex.min_distance = 0
         self.heap.push(start_vertex)
         
