@@ -7,7 +7,13 @@ class dijkstra:
         
         #maybe we head heap_time
 
-    def caculate_path(self, start_vertex, avoid_nodes = [], avoid_edges = []):
+    def caculate_path(self, start_vertex, end_vertex, avoid_nodes = None, avoid_edges = None):
+        if avoid_nodes is None:
+            avoid_nodes = []
+            
+        if avoid_edges is None:
+            avoid_edges = []
+        
         start_vertex.min_distance = 0
         self.heap.push(start_vertex)
         
@@ -18,6 +24,9 @@ class dijkstra:
 
             if actual_vertex.visited:
                 continue
+
+            if actual_vertex == end_vertex:
+                break
 
             #consider the neighbors
             for edge in actual_vertex.neighbors:
@@ -45,6 +54,10 @@ class dijkstra:
 
             actual_vertex.visited = True
 
+        print(f"Shortest path: {end_vertex.min_distance}")
+        self.print_path(end_vertex)
+        print()
+
     # this function is for caculate the time. For the fastest time path
     def caculate_time(self, start_vertex, start_time = 0, avoid_nodes = [], avoid_edges = []):
         start_vertex.min_distance = 0
@@ -54,6 +67,7 @@ class dijkstra:
         while not self.heap.is_empty():
             #pop element wwith the lowest cost
             actual_vertex = self.heap.pop()
+            
 
             if actual_vertex.visited:
                 continue
@@ -85,15 +99,10 @@ class dijkstra:
 
             actual_vertex.visited = True
 
+    #recursive function to to print out the path
+    def print_path(self, vertex):
+        if vertex is None:
+            return
 
-    def get_shortest_path(self, vertex):
-        print(f"Shortest path to the vertex is: {vertex.min_distance}")
-
-        actual_vertex = vertex
-        path = []
-        while actual_vertex is not None:
-            # print(actual_vertex.name, end = " ")
-            path.append(actual_vertex.name)
-            actual_vertex = actual_vertex.predecessor
-
-        print(' '.join(path[::-1]))
+        self.print_path(vertex.predecessor)
+        print(vertex.name, end=" ")

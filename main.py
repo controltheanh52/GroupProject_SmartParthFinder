@@ -1,6 +1,6 @@
 from graph import Node
 from queries_loader import load_queries
-from SmartPathFinder.dijkstraAlgorithm import dijkstra
+from dijkstraAlgorithm import dijkstra
 
 #Main file
 #testing
@@ -26,7 +26,7 @@ nodes = {
     "H": nodeH
 }
 
-queries = load_queries("SmartPathFinder/queries.json")
+queries = load_queries("queries.json")
 
 #Step 2 - add the edges and distance cost
 #using distance with float(Kilometer) and time(minutes), at the end, convert the time to hours and minutes
@@ -71,8 +71,7 @@ for q in queries:
 
     algorithm = dijkstra()
 
-    # caculate the dijkstra
-    algorithm.caculate_path(start_node, avoid_nodes = avoid_nodes, avoid_edges = avoid_edges)
+    
     
     print(f"Source node: {q['source']}")
     print(f"Destination node: {q['destination']}")
@@ -86,6 +85,6 @@ for q in queries:
     else:
         print(f"Avoid edges: {avoid_edges}")
 
-    algorithm.get_shortest_path(end_node)
-
+    # caculate the dijkstra
+    algorithm.caculate_path(start_node, end_node, avoid_nodes = avoid_nodes, avoid_edges = avoid_edges)
     #Add a new workflow to print out the fastest time path
