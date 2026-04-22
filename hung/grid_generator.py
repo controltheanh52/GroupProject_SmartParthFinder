@@ -26,13 +26,14 @@ def random_properties():
     multipliers = [1,   1,   1,   1,   1,    1,    1.4,  1.4, 1.4, 1.2, 1.2, 1.2,\
                    1.1, 1.1, 1.1, 1.1, 1.35, 1.35, 1.35, 1.3, 1.3, 1.3, 1,   1   ]
     
-    random_speed = random.randint(30, 50) # 30 to 50km/h
+    # travel speed (or traffic congestion rate)
+    random_speed = random.randint(30, 50)
     base_time = (distance / random_speed) * 60
     base_time = math.ceil(base_time)
     
     timeArr = [base_time * mul for mul in multipliers]
     
-    # edge direction
+    # random edge direction
     edge_direction = get_edge_direction(45, 25, 20)
     return distance, timeArr, edge_direction
 
@@ -41,9 +42,10 @@ def grid_generator(col_num, row_num):
     
     for row in range(row_num):
         for col in range(col_num):
-            # Changed to add_vertex
+            # make the current vertex
             vertex = graph.add_vertex(f'{row},{col}')
             
+            # make the neighbor vertices
             neighbors = []
             if row < row_num - 1:
                 neighbors.append(graph.add_vertex(f'{row+1},{col}'))
