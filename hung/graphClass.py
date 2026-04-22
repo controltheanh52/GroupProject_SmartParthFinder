@@ -21,7 +21,8 @@ class Vertex:
 class Graph:
     def __init__(self):
         self.vertices = {} # for vertex reference
-        self.adjList = {}
+        self.adjList = {} # Dictionary of dictionary { Vertex1: {Neighbor1: Edge, Neighbor2: Edge},
+                            #                          Vertex2: {Neighbor1: Edge, Neighbor2: Edge}  }
         
     def add_vertex(self, name):
         if name not in self.vertices:
@@ -33,9 +34,10 @@ class Graph:
     # accept vertex objects    
     def add_edge(self, u, v, distance, timeArr, bidirectional=False):
         # failsafe
+        if self.adjList[u][v]: return
         if u not in self.adjList: self.adjList[u] = {}
         if v not in self.adjList: self.adjList[v] = {}
-        
+         
         self.adjList[u][v] = Edge(distance, timeArr)
         
         if bidirectional:

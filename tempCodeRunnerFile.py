@@ -1,8 +1,0 @@
-nodeA = Node("A")
-nodeB = Node("B")
-nodeC = Node("C")
-nodeD = Node("D")
-nodeE = Node("E")
-nodeF = Node("F")
-nodeG = Node("G")
-nodeH = Node("H")

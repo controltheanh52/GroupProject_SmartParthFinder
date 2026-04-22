@@ -1,6 +1,6 @@
 from math import log2, ceil
 
-class MinHeap :
+class MinHeap:
     def __init__(self):
         self.heap = []
         
@@ -22,20 +22,6 @@ class MinHeap :
         self.heap[0] = self.heap.pop() # Move last to top
         self.heapify_down(0)
         return root
-    
-    # def remove(self, obj):
-    #     if obj not in self.heap:
-    #         return
-        
-    #     nodeIndex = self.heap.index(obj)
-    #     self.heap[nodeIndex] = self.heap[-1]
-    #     self.heap.pop()
-        
-    #     parent = int((nodeIndex - 1) / 2)
-    #     if self.heap[nodeIndex] >= self.heap[parent]:
-    #         self.heapify_down(nodeIndex)
-    #     else:
-    #         self.heapify_up(nodeIndex)
         
     def heapify_up(self, index):
         
@@ -94,6 +80,20 @@ class MinHeap :
                 index += 1
 
             print(line)
+            
+    # def remove(self, obj):
+    #     if obj not in self.heap:
+    #         return
+        
+    #     nodeIndex = self.heap.index(obj)
+    #     self.heap[nodeIndex] = self.heap[-1]
+    #     self.heap.pop()
+        
+    #     parent = int((nodeIndex - 1) / 2)
+    #     if self.heap[nodeIndex] >= self.heap[parent]:
+    #         self.heapify_down(nodeIndex)
+    #     else:
+    #         self.heapify_up(nodeIndex)
  
 if __name__ == "__main__":
     minheap = MinHeap()
