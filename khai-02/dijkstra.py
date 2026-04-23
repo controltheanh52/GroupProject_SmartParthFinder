@@ -57,18 +57,20 @@ class DijkstraResult:
         )
 
 
-def _reconstruct_path(prev, source, dest):
+def _reconstruct_path(previous_destionation, source, destination):
     """Reconstruct the path from source to dest using the prev dict."""
-    if dest not in prev and dest != source:
+    
+    if previous_destionation not in previous_destionation and destination != source:
         return []
 
     path = []
-    current = dest
+    current = previous_destionation
+
     while current is not None:
         path.append(current)
         if current == source:
             break
-        current = prev.get(current)
+        current = previous_destionation.get(current)
 
     if not path or path[-1] != source:
         return []
@@ -83,10 +85,12 @@ def _compute_path_distance(graph, path):
     for i in range(len(path) - 1):
         from_id = path[i]
         to_id = path[i + 1]
+
         for neighbor_id, edge in graph.adjacency.get(from_id, []):
             if neighbor_id == to_id:
                 total += edge.distance
                 break
+
     return total
 
 
@@ -103,12 +107,15 @@ def _compute_path_time(graph, path, departure_hour):
     for i in range(len(path) - 1):
         from_id = path[i]
         to_id = path[i + 1]
+
         for neighbor_id, edge in graph.adjacency.get(from_id, []):
             if neighbor_id == to_id:
                 current_minutes = departure_hour * 60 + total_time
                 current_hour = int(current_minutes / 60) % 24
                 total_time += edge.travel_times[current_hour]
+
                 break
+
     return total_time
 
 
@@ -116,7 +123,7 @@ def _compute_path_time(graph, path, departure_hour):
 # Weight functions
 # =============================================================================
 
-def distance_weight(edge, accumulated, departure_hour):
+def distance_weight(edge):
     """
     Weight function for shortest distance path.
     Returns the fixed distance of the edge.
@@ -145,8 +152,7 @@ def time_weight(edge, accumulated_time, departure_hour):
 # Original Dijkstra — O(V²) with early termination
 # =============================================================================
 
-def dijkstra_original(graph, source, dest, weight_fn, departure_hour=8,
-                      avoid_nodes=None, avoid_edges=None):
+def dijkstra_original(graph, source, dest, weight_fn, departure_hour=8, avoid_nodes=None, avoid_edges=None):
     """
     Original Dijkstra's algorithm using O(V) array scan for minimum extraction.
 
@@ -173,13 +179,13 @@ def dijkstra_original(graph, source, dest, weight_fn, departure_hour=8,
     start_time = time.perf_counter()
 
     # Initialize distances for ALL nodes (array-based approach)
-    dist = {}
-    prev = {}
+    distance = {}
+    previous_destination = {}
     visited = set()
 
     for node_id in graph.nodes:
-        dist[node_id] = float('inf')
-    dist[source] = 0
+        distance[node_id] = float('inf')
+    distance[source] = 0
 
     while True:
         # O(V) scan: find unvisited node with minimum distance
@@ -187,8 +193,8 @@ def dijkstra_original(graph, source, dest, weight_fn, departure_hour=8,
         min_dist = float('inf')
         for node_id in graph.nodes:
             if node_id not in visited and node_id not in (avoid_nodes or set()):
-                if dist[node_id] < min_dist:
-                    min_dist = dist[node_id]
+                if distance[node_id] < min_dist:
+                    min_dist = distance[node_id]
                     u = node_id
 
         if u is None:
@@ -206,19 +212,19 @@ def dijkstra_original(graph, source, dest, weight_fn, departure_hour=8,
             if v in visited:
                 continue
 
-            w = weight_fn(edge, dist[u], departure_hour)
-            new_dist = dist[u] + w
+            w = weight_fn(edge, distance[u], departure_hour)
+            new_dist = distance[u] + w
 
-            if new_dist < dist[v]:
-                dist[v] = new_dist
-                prev[v] = u
+            if new_dist < distance[v]:
+                distance[v] = new_dist
+                previous_destination[v] = u
                 result.edges_relaxed += 1
 
     end_time = time.perf_counter()
     result.runtime_ms = (end_time - start_time) * 1000
 
     # Reconstruct path
-    result.path = _reconstruct_path(prev, source, dest)
+    result.path = _reconstruct_path(previous_destination, source, dest)
 
     if result.found:
         result.total_distance = _compute_path_distance(graph, result.path)
@@ -231,8 +237,7 @@ def dijkstra_original(graph, source, dest, weight_fn, departure_hour=8,
 # Optimized Dijkstra — O((V+E) log V) with binary heap + lazy deletion
 # =============================================================================
 
-def dijkstra_optimized(graph, source, dest, weight_fn, departure_hour=8,
-                       avoid_nodes=None, avoid_edges=None):
+def dijkstra_optimized(graph, source, destination, weight_fn, departure_hour=8, avoid_nodes=None, avoid_edges=None):
     """
     Optimized Dijkstra's algorithm using a custom binary min-heap.
 
@@ -264,11 +269,11 @@ def dijkstra_optimized(graph, source, dest, weight_fn, departure_hour=8,
     result = DijkstraResult("Optimized (Heap)")
     start_time = time.perf_counter()
 
-    dist = {}    # node_id → best known distance (sparse — not all V)
-    prev = {}    # node_id → previous node in shortest path tree
+    distance = {}    # node_id → best known distance (sparse — not all V)
+    previous = {}    # node_id → previous node in shortest path tree
     heap = MinHeap()
 
-    dist[source] = 0
+    distance[source] = 0
     heap.push(0, source)
     result.heap_operations += 1
 
@@ -277,13 +282,13 @@ def dijkstra_optimized(graph, source, dest, weight_fn, departure_hour=8,
         result.heap_operations += 1
 
         # Lazy deletion: skip stale entries
-        if d > dist.get(u, float('inf')):
+        if d > distance.get(u, float('inf')):
             continue
 
         result.nodes_explored += 1
 
         # Early termination: destination reached
-        if u == dest:
+        if u == destination:
             break
 
         # Relax neighbors
@@ -291,9 +296,9 @@ def dijkstra_optimized(graph, source, dest, weight_fn, departure_hour=8,
             w = weight_fn(edge, d, departure_hour)
             new_dist = d + w
 
-            if new_dist < dist.get(v, float('inf')):
-                dist[v] = new_dist
-                prev[v] = u
+            if new_dist < distance.get(v, float('inf')):
+                distance[v] = new_dist
+                previous[v] = u
                 heap.push(new_dist, v)
                 result.edges_relaxed += 1
                 result.heap_operations += 1
@@ -302,7 +307,7 @@ def dijkstra_optimized(graph, source, dest, weight_fn, departure_hour=8,
     result.runtime_ms = (end_time - start_time) * 1000
 
     # Reconstruct path
-    result.path = _reconstruct_path(prev, source, dest)
+    result.path = _reconstruct_path(previous, source, destination)
 
     if result.found:
         result.total_distance = _compute_path_distance(graph, result.path)
