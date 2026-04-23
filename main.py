@@ -46,10 +46,10 @@ for q in queries:
         print(f"Avoid edges: {avoid_edges}")
 
     # caculate the A*
-    start = time.time()
+    start_1 = time.time()
     algorithm.calculate_distance_path(start_node, end_node, start_time, avoid_nodes, avoid_edges)
-    end = time.time()
-    print("\nRuntime (shortest path algorithm):", (end - start) * 1000, "ms")
+    end_1 = time.time()
+    print("\nRuntime (shortest path algorithm):", (end_1 - start_1) * 1000, "ms")
     
     reset_graph(nodes)
 
