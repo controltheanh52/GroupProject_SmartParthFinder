@@ -60,12 +60,12 @@ class DijkstraResult:
 def _reconstruct_path(previous_destionation, source, destination):
     """Reconstruct the path from source to dest using the prev dict."""
     
-    if previous_destionation not in previous_destionation and destination != source:
+    if destination not in previous_destionation and destination != source:
         return []
 
     path = []
-    current = previous_destionation
-
+    current = destination
+    
     while current is not None:
         path.append(current)
         if current == source:
@@ -123,7 +123,7 @@ def _compute_path_time(graph, path, departure_hour):
 # Weight functions
 # =============================================================================
 
-def distance_weight(edge):
+def distance_weight(edge, accumulated_time, departure_hour):
     """
     Weight function for shortest distance path.
     Returns the fixed distance of the edge.
@@ -278,28 +278,28 @@ def dijkstra_optimized(graph, source, destination, weight_fn, departure_hour=8, 
     result.heap_operations += 1
 
     while not heap.is_empty():
-        d, u = heap.pop()
+        current_distance, node_id = heap.pop()
         result.heap_operations += 1
 
         # Lazy deletion: skip stale entries
-        if d > distance.get(u, float('inf')):
+        if current_distance > distance.get(node_id, float('inf')):
             continue
 
         result.nodes_explored += 1
 
         # Early termination: destination reached
-        if u == destination:
+        if node_id == destination:
             break
 
         # Relax neighbors
-        for v, edge in graph.get_neighbors(u, avoid_nodes, avoid_edges):
-            w = weight_fn(edge, d, departure_hour)
-            new_dist = d + w
+        for vertex, edge in graph.get_neighbors(node_id, avoid_nodes, avoid_edges):
+            weight = weight_fn(edge, current_distance, departure_hour)
+            new_distance = current_distance + weight
 
-            if new_dist < distance.get(v, float('inf')):
-                distance[v] = new_dist
-                previous[v] = u
-                heap.push(new_dist, v)
+            if new_distance < distance.get(vertex, float('inf')):
+                distance[vertex] = new_distance
+                previous[vertex] = node_id
+                heap.push(new_distance, vertex)
                 result.edges_relaxed += 1
                 result.heap_operations += 1
 
