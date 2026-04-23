@@ -1,0 +1,15 @@
+start_vertex,end_vertex,distance,bi_directional, road_type
+A,B,40,True,city
+B,C,40,True,city
+C,D,40,True,city
+D,J,40,True,city
+A,E,60,True,highway
+E,F,60,True,highway
+F,G,60,True,highway
+G,H,60,True,highway
+H,I,60,True,highway
+I,J,60,True,highway
+B,F,50,True,normal
+C,G,50,True,normal
+E,B,30,False,city
+H,D,30,False,city

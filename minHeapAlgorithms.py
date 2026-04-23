@@ -1,12 +1,22 @@
 class MinHeap:
     def __init__(self):
+        # Internal list to store heap elements
+        # Each element will be a tuple: (priority, node)
         self.heap = []
 
+    def peek(self):
+        # Return smallest element without removing it
+        if not self.heap:
+            return None
+        return self.heap[0]
+
     def push(self, item):
+        # Add new item to heap and restore heap property
         self.heap.append(item)
         self._heapify_up(len(self.heap) - 1)
 
     def pop(self):
+        # Remove and return smallest element (root)
         if len(self.heap) == 0:
             return None
         
@@ -19,21 +29,26 @@ class MinHeap:
         return len(self.heap) == 0
 
     def _heapify_up(self, index):
+        # Move element up until heap property is restored
         parent = (index - 1) // 2
-        while index > 0 and self.heap[index] < self.heap[parent]:
+
+        # Compare based on priority (item[0])
+        while index > 0 and self.heap[index][0] < self.heap[parent][0]:
             self._swap(index, parent)
             index = parent
             parent = (index - 1) // 2
 
     def _heapify_down(self, index):
+        # Move element down until heap property is restored
         smallest = index
         left = 2 * index + 1
         right = 2 * index + 2
 
-        if left < len(self.heap) and self.heap[left] < self.heap[smallest]:
+        # Compare based on priority (item[0])
+        if left < len(self.heap) and self.heap[left][0] < self.heap[smallest][0]:
             smallest = left
 
-        if right < len(self.heap) and self.heap[right] < self.heap[smallest]:
+        if right < len(self.heap) and self.heap[right][0] < self.heap[smallest][0]:
             smallest = right
 
         if smallest != index:

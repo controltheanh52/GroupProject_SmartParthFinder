@@ -1,24 +1,38 @@
 [
   {
     "source": "A",
-    "destination": "G"
+    "destination": "J",
+    "start_time": 6
   },
-
   {
     "source": "A",
-    "destination": "F",
-    "avoid_nodes": ["C", "D"]
-  },
-
-  {
-    "source": "B",
-    "destination": "G",
-    "avoid_edges": [["B", "D"], ["D", "F"]]
+    "destination": "J",
+    "start_time": 6,
+    "avoid_nodes": ["C"]
   },
   {
-    "source": "B",
-    "destination": "G",
-    "avoid_nodes": ["F"],
-    "avoid_edges": [["B", "D"], ["D", "F"]]
+    "source": "A",
+    "destination": "J",
+    "start_time": 6,
+    "avoid_nodes": ["E"]
+  },
+  {
+    "source": "A",
+    "destination": "J",
+    "start_time": 6,
+    "avoid_edges": [["B","C"]]
+  },
+  {
+    "source": "A",
+    "destination": "J",
+    "start_time": 6,
+    "avoid_edges": [["E","F"], ["F","G"]]
+  },
+  {
+    "source": "A",
+    "destination": "J",
+    "start_time": 8,
+    "avoid_nodes": ["C"],
+    "avoid_edges": [["E","F"]]
   }
 ]

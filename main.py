@@ -1,78 +1,38 @@
-from graph import Node
+import time
+from csv_loader import load_vertices, load_edges
 from queries_loader import load_queries
-from dijkstraAlgorithm import dijkstra
-
+from DijkstraAlgorithm import Dijkstra
 #Main file
-#testing
 
-#Step 1 - create vertex
-nodeA = Node("A")
-nodeB = Node("B")
-nodeC = Node("C")
-nodeD = Node("D")
-nodeE = Node("E")
-nodeF = Node("F")
-nodeG = Node("G")
-nodeH = Node("H")
-
-nodes = {
-    "A": nodeA,
-    "B": nodeB,
-    "C": nodeC,
-    "D": nodeD,
-    "E": nodeE,
-    "F": nodeF,
-    "G": nodeG,
-    "H": nodeH
-}
-
+nodes = load_vertices("Data/vertices.csv")
+load_edges("data/edges.csv", nodes)
 queries = load_queries("queries.json")
 
-#Step 2 - add the edges and distance cost
-#using distance with float(Kilometer) and time(minutes), at the end, convert the time to hours and minutes
-nodeA.add_edge(60.0, nodeB)
-nodeA.add_edge(9.5, nodeD)
-nodeA.add_edge(10.0, nodeC)
-
-nodeB.add_edge(5.0, nodeD)
-nodeB.add_edge(16.0, nodeE)
-nodeB.add_edge(13.0, nodeF)
-
-nodeC.add_edge(6.0, nodeD)
-nodeC.add_edge(5.0, nodeH)
-nodeC.add_edge(21.0, nodeG)
-
-nodeD.add_edge(8.0, nodeF)
-nodeD.add_edge(7.0, nodeH)
-
-nodeE.add_edge(10.0, nodeG)
-
-nodeF.add_edge(4.0, nodeE)
-nodeF.add_edge(12.0, nodeG)
-
-nodeH.add_edge(2.0, nodeF)
-nodeH.add_edge(14.0, nodeG)
-
+def reset_graph(nodes):
+    for node in nodes.values():
+        node.visited = False
+        node.predecessor = None
+        node.min_distance = float("inf")
+        node.min_time = float("inf")
+        node.current_time = float("inf")
+        node.f = float("inf")
 
 for q in queries:
     print("\n======================================================")
 
     start_node = nodes[q["source"]]
     end_node = nodes[q["destination"]]
+    start_time = q.get("start_time", 8)
 
     avoid_nodes = q["avoid_nodes"]
     avoid_edges = [tuple(edge) for edge in q.get("avoid_edges", [])]
 
-    # reset graph before run
-    for node in nodes.values():
-        node.visited = False
-        node.min_distance = float("inf")
-        node.predecessor = None
+    # reset graph before run next query
+    reset_graph(nodes)
 
-    algorithm = dijkstra()
+    algorithm = Dijkstra()
 
-    
-    
+    print(f"Start time: {q['start_time']}")
     print(f"Source node: {q['source']}")
     print(f"Destination node: {q['destination']}")
     if avoid_nodes == []:
@@ -85,6 +45,16 @@ for q in queries:
     else:
         print(f"Avoid edges: {avoid_edges}")
 
-    # caculate the dijkstra
-    algorithm.caculate_path(start_node, end_node, avoid_nodes = avoid_nodes, avoid_edges = avoid_edges)
-    #Add a new workflow to print out the fastest time path
+    # caculate the A*
+    start = time.time()
+    algorithm.calculate_distance_path(start_node, end_node, start_time, avoid_nodes, avoid_edges)
+    end = time.time()
+    print("\nRuntime (shortest path algorithm):", (end - start) * 1000, "ms")
+    
+    reset_graph(nodes)
+
+    # time
+    start = time.time()
+    algorithm.calculate_time_path(start_node, end_node, start_time, avoid_nodes, avoid_edges)
+    end = time.time()
+    print("Runtime (fastest time algorithm):", (end - start) * 1000, "ms")
