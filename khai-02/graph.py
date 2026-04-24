@@ -10,11 +10,10 @@ Space Complexity: O(V + E) where V = nodes, E = edges.
 
 import math
 
-
+# Represents a location (intersection) on the map.
 class Node:
-    """Represents a location (intersection) on the map."""
-
-    __slots__ = ('id', 'name', 'lat', 'lon')
+    
+    __slots__ = ('id', 'name', 'lat', 'lon') # for faster lookup and less memory
 
     def __init__(self, node_id, name, lat, lon):
         self.id = node_id
@@ -25,11 +24,10 @@ class Node:
     def __repr__(self):
         return f"Node({self.id}, '{self.name}', lat={self.lat:.6f}, lon={self.lon:.6f})"
 
-
+# Represents a directed road between two nodes.
 class Edge:
-    """Represents a directed road between two nodes."""
 
-    __slots__ = ('from_id', 'to_id', 'distance', 'travel_times')
+    __slots__ = ('from_id', 'to_id', 'distance', 'travel_times') # for faster lookup and less memory
 
     def __init__(self, from_id, to_id, distance, travel_times):
         """

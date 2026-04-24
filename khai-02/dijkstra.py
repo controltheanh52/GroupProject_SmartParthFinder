@@ -57,7 +57,7 @@ class DijkstraResult:
         )
 
 
-def _reconstruct_path(prev, source, dest):
+def reconstruct_path(prev, source, dest):
     """Reconstruct the path from source to dest using the prev dict."""
     if dest not in prev and dest != source:
         return []
@@ -77,7 +77,7 @@ def _reconstruct_path(prev, source, dest):
     return path
 
 
-def _compute_path_distance(graph, path):
+def compute_path_distance(graph, path):
     """Compute total distance along a path (sum of edge distances)."""
     total = 0.0
     for i in range(len(path) - 1):
@@ -90,7 +90,7 @@ def _compute_path_distance(graph, path):
     return total
 
 
-def _compute_path_time(graph, path, departure_hour):
+def compute_path_time(graph, path, departure_hour):
     """
     Compute total travel time along a path with time-dependent edges.
 
@@ -218,11 +218,11 @@ def dijkstra_original(graph, source, dest, weight_fn, departure_hour=8,
     result.runtime_ms = (end_time - start_time) * 1000
 
     # Reconstruct path
-    result.path = _reconstruct_path(prev, source, dest)
+    result.path = reconstruct_path(prev, source, dest)
 
     if result.found:
-        result.total_distance = _compute_path_distance(graph, result.path)
-        result.total_time = _compute_path_time(graph, result.path, departure_hour)
+        result.total_distance = compute_path_distance(graph, result.path)
+        result.total_time = compute_path_time(graph, result.path, departure_hour)
 
     return result
 
@@ -302,10 +302,10 @@ def dijkstra_optimized(graph, source, dest, weight_fn, departure_hour=8,
     result.runtime_ms = (end_time - start_time) * 1000
 
     # Reconstruct path
-    result.path = _reconstruct_path(prev, source, dest)
+    result.path = reconstruct_path(prev, source, dest)
 
     if result.found:
-        result.total_distance = _compute_path_distance(graph, result.path)
-        result.total_time = _compute_path_time(graph, result.path, departure_hour)
+        result.total_distance = compute_path_distance(graph, result.path)
+        result.total_time = compute_path_time(graph, result.path, departure_hour)
 
     return result

@@ -26,15 +26,14 @@ class MinHeap:
     """
 
     def __init__(self):
-        self._data = []  # list of (priority, insertion_order, item)
-        self._counter = 0  # tie-breaker for equal priorities
+        self.data = []  # list of (priority, insertion_order, item)
+        self.counter = 0  # tie-breaker for equal priorities
 
     def push(self, priority, item):
         """Insert an item with the given priority. O(log n)."""
-        entry = (priority, self._counter, item)
-        self._counter += 1
-        self._data.append(entry)
-        self._sift_up(len(self._data) - 1)
+        self.data.append((priority, self.counter, item))
+        self.counter += 1
+        self.sift_up(len(self.data) - 1)
 
     def pop(self):
         """
@@ -42,76 +41,76 @@ class MinHeap:
         Raises IndexError if the heap is empty.
         O(log n).
         """
-        if not self._data:
+        if not self.data:
             raise IndexError("pop from empty heap")
 
         # Swap root with last element, then sift down
-        self._swap(0, len(self._data) - 1)
-        priority, _, item = self._data.pop()
+        self.swap(0, len(self.data) - 1)
+        priority, _, item = self.data.pop()
 
-        if self._data:
-            self._sift_down(0)
+        if self.data:
+            self.sift_down(0)
 
         return priority, item
 
     def peek(self):
         """Return (priority, item) with the smallest priority without removing. O(1)."""
-        if not self._data:
+        if not self.data:
             raise IndexError("peek at empty heap")
-        priority, _, item = self._data[0]
+        priority, _, item = self.data[0]
         return priority, item
 
     def is_empty(self):
         """Check if the heap is empty. O(1)."""
-        return len(self._data) == 0
+        return not self.data  # More Pythonic than len() == 0
 
     def __len__(self):
         """Return the number of entries in the heap. O(1)."""
-        return len(self._data)
+        return len(self.data)
 
     def __bool__(self):
         """Return True if the heap is non-empty."""
-        return len(self._data) > 0
+        return bool(self.data)
 
     # -------------------------------------------------------------------------
     # Internal heap operations
     # -------------------------------------------------------------------------
 
-    def _sift_up(self, index):
+    def sift_up(self, index):
         """
         Move element at 'index' up until the heap property is restored.
         Called after insertion at the bottom of the heap.
         """
         while index > 0:
             parent = (index - 1) // 2
-            if self._data[index] < self._data[parent]:
-                self._swap(index, parent)
+            if self.data[index] < self.data[parent]:
+                self.swap(index, parent)
                 index = parent
             else:
                 break
 
-    def _sift_down(self, index):
+    def sift_down(self, index):
         """
         Move element at 'index' down until the heap property is restored.
         Called after replacing the root during pop.
         """
-        size = len(self._data)
+        size = len(self.data)
         while True:
             smallest = index
             left = 2 * index + 1
             right = 2 * index + 2
 
-            if left < size and self._data[left] < self._data[smallest]:
+            if left < size and self.data[left] < self.data[smallest]:
                 smallest = left
-            if right < size and self._data[right] < self._data[smallest]:
+            if right < size and self.data[right] < self.data[smallest]:
                 smallest = right
 
             if smallest != index:
-                self._swap(index, smallest)
+                self.swap(index, smallest)
                 index = smallest
             else:
                 break
 
-    def _swap(self, i, j):
+    def swap(self, i, j):
         """Swap elements at indices i and j."""
-        self._data[i], self._data[j] = self._data[j], self._data[i]
+        self.data[i], self.data[j] = self.data[j], self.data[i]
