@@ -262,14 +262,14 @@ def dijkstra_original(graph, source_id, dest_id, weight_func, departure_hour=8, 
     # Create a list that tell we have not visited all the nodes yet
     unvisited = set(graph.nodes.keys())
     
-    # Remove the nodes in the avoid_nodes list from the unvisited list
     if avoid_nodes:
+        # Pre check the query if the start node in the avoid_nodes list
+        if source_id in avoid_nodes:
+            return result
+            
+        # Remove the avoid_nodes from the unvisited set
         for node in avoid_nodes:
-            unvisited.discard(node) # Use discard because the input id could be wrong or non-exist
-
-    # Pre check the query if the start node in the avoid_nodes list
-    if source_id in avoid_nodes:
-        return result
+            unvisited.discard(node)
 
     # How to score each node
     def get_known_score(node_id):
@@ -465,26 +465,26 @@ def main():
                 case_choice = input("Enter configuration (1-5): ").strip()
                 
                 if case_choice == '1':
-                    src, dst, hour = 0, 1999, 8
+                    src, dst, hour = 0, 4999, 8
                     avoid_nodes, avoid_edges = set(), set()
                     print(f"\n[Case 1] Running query from {src} to {dst} at {hour}:00...")
                     
                 elif case_choice == '2':
-                    src, dst, hour = 0, 1999, 8
-                    avoid_nodes = {45, 97}  # Blocks the most direct highway access
+                    src, dst, hour = 0, 4999, 8
+                    avoid_nodes = {90, 88}  # Blocks nodes that appear in the original shortest path
                     avoid_edges = set()
                     print(f"\n[Case 2] Running query from {src} to {dst} avoiding nodes {avoid_nodes}...")
                     
                 elif case_choice == '3':
-                    src, dst, hour = 0, 1999, 8
+                    src, dst, hour = 0, 4999, 8
                     avoid_nodes = set()
-                    avoid_edges = {(0, 45), (45, 97)} # Blocks the roads directly to the highway
+                    avoid_edges = {(5, 3), (3509, 4449)} # Blocks edges that appear in the original shortest path
                     print(f"\n[Case 3] Running query from {src} to {dst} avoiding edges {avoid_edges}...")
                     
                 elif case_choice == '4':
-                    src, dst, hour = 0, 1999, 8
-                    avoid_nodes = {108, 5}
-                    avoid_edges = {(0, 45)}
+                    src, dst, hour = 0, 4999, 8
+                    avoid_nodes = {5, 1067}
+                    avoid_edges = {(4449, 4561)}
                     print(f"\n[Case 4] Running query from {src} to {dst} avoiding nodes {avoid_nodes} and edges {avoid_edges}...")
                     
                 else:
@@ -508,7 +508,8 @@ def main():
                 print("1. ORIGINAL VERSION: Shortest Distance Path")
                 res_dist_orig = dijkstra_original(graph, src, dst, distance_weight, hour, avoid_nodes, avoid_edges)
                 if res_dist_orig.found:
-                    print(f"Path: {' -> '.join(map(str, res_dist_orig.path))}")
+                    path_str = ' -> '.join([f"{n_id}. {graph.get_node(n_id).name}" for n_id in res_dist_orig.path])
+                    print(f"Path: {path_str}")
                     print(f"Distance: {res_dist_orig.total_distance/1000:.2f} km")
                     print(f"Time: {res_dist_orig.total_time:.1f} min")
                     print(f"Nodes Explored: {res_dist_orig.nodes_explored} | Edges Relaxed: {res_dist_orig.edges_relaxed} | Runtime: {res_dist_orig.runtime_ms:.2f} ms")
@@ -519,7 +520,8 @@ def main():
                 print("2. OPTIMIZED VERSION: Shortest Distance Path")
                 res_dist_opt = dijkstra_optimized(graph, src, dst, distance_weight, hour, avoid_nodes, avoid_edges)
                 if res_dist_opt.found:
-                    print(f"Path: {' -> '.join(map(str, res_dist_opt.path))}")
+                    path_str = ' -> '.join([f"{n_id}. {graph.get_node(n_id).name}" for n_id in res_dist_opt.path])
+                    print(f"Path: {path_str}")
                     print(f"Distance: {res_dist_opt.total_distance/1000:.2f} km")
                     print(f"Time: {res_dist_opt.total_time:.1f} min")
                     print(f"Nodes Explored: {res_dist_opt.nodes_explored} | Edges Relaxed: {res_dist_opt.edges_relaxed} | Heap Ops: {res_dist_opt.heap_operations} | Runtime: {res_dist_opt.runtime_ms:.2f} ms")
@@ -530,7 +532,8 @@ def main():
                 print("3. ORIGINAL VERSION: Shortest Travel Time Path")
                 res_time_orig = dijkstra_original(graph, src, dst, time_weight, hour, avoid_nodes, avoid_edges)
                 if res_time_orig.found:
-                    print(f"Path: {' -> '.join(map(str, res_time_orig.path))}")
+                    path_str = ' -> '.join([f"{n_id}. {graph.get_node(n_id).name}" for n_id in res_time_orig.path])
+                    print(f"Path: {path_str}")
                     print(f"Distance: {res_time_orig.total_distance/1000:.2f} km")
                     print(f"Time: {res_time_orig.total_time:.1f} min")
                     print(f"Nodes Explored: {res_time_orig.nodes_explored} | Edges Relaxed: {res_time_orig.edges_relaxed} | Runtime: {res_time_orig.runtime_ms:.2f} ms")
@@ -541,7 +544,8 @@ def main():
                 print("4. OPTIMIZED VERSION: Shortest Travel Time Path")
                 res_time_opt = dijkstra_optimized(graph, src, dst, time_weight, hour, avoid_nodes, avoid_edges)
                 if res_time_opt.found:
-                    print(f"Path: {' -> '.join(map(str, res_time_opt.path))}")
+                    path_str = ' -> '.join([f"{n_id}. {graph.get_node(n_id).name}" for n_id in res_time_opt.path])
+                    print(f"Path: {path_str}")
                     print(f"Distance: {res_time_opt.total_distance/1000:.2f} km")
                     print(f"Time: {res_time_opt.total_time:.1f} min")
                     print(f"Nodes Explored: {res_time_opt.nodes_explored} | Edges Relaxed: {res_time_opt.edges_relaxed} | Heap Ops: {res_time_opt.heap_operations} | Runtime: {res_time_opt.runtime_ms:.2f} ms")

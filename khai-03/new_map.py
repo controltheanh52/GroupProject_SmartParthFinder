@@ -1,8 +1,11 @@
 """
 Smart Path Finder - New Map Generator
 
-Run this file independently to generate a new realistic road network 
-and save it to the CSV files in the data/ directory.
+Instructions:
+1. Run this file independently using: `python new_map.py`
+2. It will generate a realistic road network based on the parameters in the 'Generator Configuration' section.
+3. The result is saved as 'nodes.csv' and 'edges.csv' in the data/ directory.
+4. After generation, run 'python solution.py' to query shortest paths on this map.
 """
 
 import math
@@ -13,38 +16,48 @@ import os
 from solution import Node, Edge
 
 # =============================================================================
-# Generator Configuration
+# Configuration
 # =============================================================================
 
-LAT_MIN, LAT_MAX = 10.720, 10.860
-LON_MIN, LON_MAX = 106.620, 106.760
+# Region bounds (roughly a city-sized area, ~15km x 15km)
+LAT_MIN = 10.720
+LAT_MAX = 10.860
+LON_MIN = 106.620
+LON_MAX = 106.760
 
-NUM_NODES = 2000
+# Node generation
+NUM_NODES = 5000
 NUM_NEIGHBORHOODS = 20
 NODES_PER_NEIGHBORHOOD_MIN = 70
 NODES_PER_NEIGHBORHOOD_MAX = 130
-MIN_NODE_SPACING_METERS = 50
+MIN_NODE_SPACING_METERS = 50  # minimum distance between any two nodes
 
-KNN_K = 4
-REGIONAL_RADIUS_M = 1500
-REGIONAL_PROBABILITY = 0.008
-HIGHWAY_COUNT_RATIO = 0.04
-HIGHWAY_MIN_DIST_M = 5000
-HIGHWAY_MAX_DIST_M = 15000
-BIDIRECTIONAL_RATIO = 0.70
+# Edge generation
+KNN_K = 4                     # each node connects to k nearest neighbors
+REGIONAL_RADIUS_M = 1500      # connect nodes within this radius with some probability
+REGIONAL_PROBABILITY = 0.008  # probability of regional connection per pair in radius
+HIGHWAY_COUNT_RATIO = 0.04    # fraction of nodes that get highway links
+HIGHWAY_MIN_DIST_M = 5000     # minimum distance for highway edges
+HIGHWAY_MAX_DIST_M = 15000    # maximum distance for highway edges
+BIDIRECTIONAL_RATIO = 0.70    # fraction of edges that are two-way
 
-SPEED_LOCAL = 30
-SPEED_CITY = 50
-SPEED_HIGHWAY = 90
+# Speed profiles (km/h) by road type
+SPEED_LOCAL = 30       # short edges (< 1 km)
+SPEED_CITY = 50        # medium edges (1-5 km)
+SPEED_HIGHWAY = 90     # long edges (> 5 km)
 
+# Congestion multipliers per hour (index = hour 0-23)
 CONGESTION_PROFILE = [
-    0.82, 0.80, 0.80, 0.82, 0.85, 0.90,
-    1.10, 1.80, 2.20, 1.30, 1.10, 1.15,
-    1.30, 1.10, 1.05, 1.10, 1.20, 1.90,
-    2.30, 1.50, 1.20, 1.10, 0.95, 0.88,
+    0.82, 0.80, 0.80, 0.82, 0.85, 0.90,  # 0-5:  night (low traffic)
+    1.10, 1.80, 2.20, 1.30, 1.10, 1.15,  # 6-11: morning rush peaks at 7-8
+    1.30, 1.10, 1.05, 1.10, 1.20, 1.90,  # 12-17: afternoon, evening rush starts
+    2.30, 1.50, 1.20, 1.10, 0.95, 0.88,  # 18-23: evening rush peaks at 18, tapers
 ]
+
+# Congestion variation range (±)
 CONGESTION_VARIATION = 0.12
 
+# Random seed for reproducibility
 SEED = 42
 
 STREET_NAMES = [
