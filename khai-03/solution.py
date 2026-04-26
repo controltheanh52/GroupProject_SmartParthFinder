@@ -510,8 +510,8 @@ def main():
                 if res_dist_orig.found:
                     path_id_str = ' -> '.join(map(str, res_dist_orig.path))
                     path_name_str = ' -> '.join([graph.get_node(n_id).name for n_id in res_dist_orig.path])
-                    print(f"Path (by IDs):   {path_id_str}")
-                    print(f"Path (by names): {path_name_str}")
+                    print(f"Path (by IDs):   {path_id_str} \n")
+                    print(f"Path (by names): {path_name_str} \n")
                     print(f"Distance: {res_dist_orig.total_distance/1000:.2f} km")
                     print(f"Time: {res_dist_orig.total_time:.1f} min")
                     print(f"Nodes Explored: {res_dist_orig.nodes_explored} | Edges Relaxed: {res_dist_orig.edges_relaxed} | Runtime: {res_dist_orig.runtime_ms:.2f} ms")
@@ -524,8 +524,8 @@ def main():
                 if res_dist_opt.found:
                     path_id_str = ' -> '.join(map(str, res_dist_opt.path))
                     path_name_str = ' -> '.join([graph.get_node(n_id).name for n_id in res_dist_opt.path])
-                    print(f"Path (by IDs):   {path_id_str}")
-                    print(f"Path (by names): {path_name_str}")
+                    print(f"Path (by IDs):   {path_id_str} \n")
+                    print(f"Path (by names): {path_name_str} \n")
                     print(f"Distance: {res_dist_opt.total_distance/1000:.2f} km")
                     print(f"Time: {res_dist_opt.total_time:.1f} min")
                     print(f"Nodes Explored: {res_dist_opt.nodes_explored} | Edges Relaxed: {res_dist_opt.edges_relaxed} | Heap Ops: {res_dist_opt.heap_operations} | Runtime: {res_dist_opt.runtime_ms:.2f} ms")
@@ -538,8 +538,8 @@ def main():
                 if res_time_orig.found:
                     path_id_str = ' -> '.join(map(str, res_time_orig.path))
                     path_name_str = ' -> '.join([graph.get_node(n_id).name for n_id in res_time_orig.path])
-                    print(f"Path (by IDs):   {path_id_str}")
-                    print(f"Path (by names): {path_name_str}")
+                    print(f"Path (by IDs):   {path_id_str} \n")
+                    print(f"Path (by names): {path_name_str} \n")
                     print(f"Distance: {res_time_orig.total_distance/1000:.2f} km")
                     print(f"Time: {res_time_orig.total_time:.1f} min")
                     print(f"Nodes Explored: {res_time_orig.nodes_explored} | Edges Relaxed: {res_time_orig.edges_relaxed} | Runtime: {res_time_orig.runtime_ms:.2f} ms")
@@ -552,8 +552,8 @@ def main():
                 if res_time_opt.found:
                     path_id_str = ' -> '.join(map(str, res_time_opt.path))
                     path_name_str = ' -> '.join([graph.get_node(n_id).name for n_id in res_time_opt.path])
-                    print(f"Path (by IDs):   {path_id_str}")
-                    print(f"Path (by names): {path_name_str}")
+                    print(f"Path (by IDs):   {path_id_str} \n")
+                    print(f"Path (by names): {path_name_str} \n")
                     print(f"Distance: {res_time_opt.total_distance/1000:.2f} km")
                     print(f"Time: {res_time_opt.total_time:.1f} min")
                     print(f"Nodes Explored: {res_time_opt.nodes_explored} | Edges Relaxed: {res_time_opt.edges_relaxed} | Heap Ops: {res_time_opt.heap_operations} | Runtime: {res_time_opt.runtime_ms:.2f} ms")
