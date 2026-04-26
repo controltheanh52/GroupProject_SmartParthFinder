@@ -299,9 +299,9 @@ def dijkstra_original(graph, source_id, dest_id, weight_func, departure_hour=8, 
             # calculate the cost of the edge based on the passing weighting function (distance-km or time-minutes) 
             edge_cost = weight_func(edge, current_cost, departure_hour) 
             new_cost = current_cost + edge_cost
-            result.edges_relaxed += 1   # Update the benchmark metrics
             
             if new_cost < cost_val[neighbor_node_id]:
+                result.edges_relaxed += 1   # Count successful relaxations
                 cost_val[neighbor_node_id] = new_cost # Update the lowest cost to reach this same neighbor node
                 prev[neighbor_node_id] = current_node_id # Add the current node in the node sequence
 
@@ -363,10 +363,10 @@ def dijkstra_optimized(graph, source_id, dest_id, weight_func, departure_hour=8,
             # calculate the cost of the edge based on the passing weighting function (distance-km or time-minutes)
             edge_cost = weight_func(edge, current_cost, departure_hour)
             new_cost = current_cost + edge_cost
-            result.edges_relaxed += 1    # Update the benchmark metrics
             
             # If the new cost is lower than the current cost, update the cost and the previous node
             if neighbor_node not in cost_val or new_cost < cost_val[neighbor_node]:
+                result.edges_relaxed += 1    # Count successful relaxations
                 cost_val[neighbor_node] = new_cost
                 prev[neighbor_node] = current_node_id
                 
@@ -386,7 +386,7 @@ def dijkstra_optimized(graph, source_id, dest_id, weight_func, departure_hour=8,
 # =============================================================================
 # CSV File Loading & Execution
 # =============================================================================
-
+1
 def load_graph_csv(nodes_path, edges_path):
     if not os.path.exists(nodes_path) or not os.path.exists(edges_path):
         return None
