@@ -1,0 +1,45 @@
+{
+  "queries": [
+    {
+      "id": "case_1",
+      "name": "Source & Destination Only",
+      "source": 0,
+      "destination": 4999,
+      "departure_hour": 8,
+      "avoid_nodes": [],
+      "avoid_edges": []
+    },
+    {
+      "id": "case_2",
+      "name": "Source, Dest, and Avoid Nodes",
+      "source": 0,
+      "destination": 4999,
+      "departure_hour": 8,
+      "avoid_nodes": [90, 88],
+      "avoid_edges": []
+    },
+    {
+      "id": "case_3",
+      "name": "Source, Dest, and Avoid Edges",
+      "source": 0,
+      "destination": 4999,
+      "departure_hour": 8,
+      "avoid_nodes": [],
+      "avoid_edges": [
+        [5, 3],
+        [3509, 4449]
+      ]
+    },
+    {
+      "id": "case_4",
+      "name": "Source, Dest, Avoid Nodes, and Avoid Edges",
+      "source": 0,
+      "destination": 4999,
+      "departure_hour": 8,
+      "avoid_nodes": [5, 1067],
+      "avoid_edges": [
+        [4449, 4561]
+      ]
+    }
+  ]
+}

@@ -7,6 +7,7 @@ import os
 import random
 import time
 import math
+import json
 
 # =============================================================================
 # Core Solution & Data Structures
@@ -428,22 +429,37 @@ def update_travel_times_in_memory(graph):
     print("These changes will revert to normal once you terminate the program.")
 
 
-#Interactive Terminal for demonstration
+# Interactive Terminal for demonstration
 def main():
-    data_dir = os.path.join(os.path.dirname(os.path.abspath(__file__)), 'data')
-    nodes_path = os.path.join(data_dir, 'nodes.csv')
-    edges_path = os.path.join(data_dir, 'edges.csv')
+    base_dir = os.path.dirname(os.path.abspath(__file__))    # Get the absolute directory path containing this script
+    data_dir = os.path.join(base_dir, 'data')                 # Define the path to the 'data' folder
+    nodes_path = os.path.join(data_dir, 'nodes.csv')          # Get the directory containing csv file for node data
+    edges_path = os.path.join(data_dir, 'edges.csv')          # Get the directory containing csv file for edge data
+    queries_path = os.path.join(base_dir, 'queries.json')     # Path to predefined queries in JSON file
     
+    # Load predefined test queries from JSON file if it exists
+    queries = []
+    if os.path.exists(queries_path):
+        with open(queries_path, 'r', encoding='utf-8') as f:
+            queries = json.load(f).get("queries", [])
+    else:
+        print("There is no queries.json file in the current directory.")
+        return
+    
+    # Load map graph from the nodes and edges CSV files
     print("Loading graph data...")
     graph = load_graph_csv(nodes_path, edges_path)
     
+    # Check if graph loading was successful
     if graph is None:
         print(f"Error: map data not found in {data_dir}.")
         print("Please run 'python new_map.py' first to generate the map.")
         return
         
+    # Provide visual feedback on load success
     print(f"Graph loaded successfully: {len(graph.nodes)} nodes, {sum(len(edges) for edges in graph.adjacency.values())} edges.")
     
+    # Start the interactive tool
     while True:
         print("\n--- Main Menu ---")
         print("1. Query Shortest Path")
@@ -464,30 +480,27 @@ def main():
                 
                 case_choice = input("Enter configuration (1-5): ").strip()
                 
-                if case_choice == '1':
-                    src, dst, hour = 0, 4999, 8
-                    avoid_nodes, avoid_edges = set(), set()
-                    print(f"\n[Case 1] Running query from {src} to {dst} at {hour}:00...")
-                    
-                elif case_choice == '2':
-                    src, dst, hour = 0, 4999, 8
-                    avoid_nodes = {90, 88}  # Blocks nodes that appear in the original shortest path
-                    avoid_edges = set()
-                    print(f"\n[Case 2] Running query from {src} to {dst} avoiding nodes {avoid_nodes}...")
-                    
-                elif case_choice == '3':
-                    src, dst, hour = 0, 4999, 8
-                    avoid_nodes = set()
-                    avoid_edges = {(5, 3), (3509, 4449)} # Blocks edges that appear in the original shortest path
-                    print(f"\n[Case 3] Running query from {src} to {dst} avoiding edges {avoid_edges}...")
-                    
-                elif case_choice == '4':
-                    src, dst, hour = 0, 4999, 8
-                    avoid_nodes = {5, 1067}
-                    avoid_edges = {(4449, 4561)}
-                    print(f"\n[Case 4] Running query from {src} to {dst} avoiding nodes {avoid_nodes} and edges {avoid_edges}...")
-                    
-                else:
+                if case_choice in ['1', '2', '3', '4']:
+                    idx = int(case_choice) - 1
+                    if idx < len(queries):
+                        q = queries[idx]
+                        src = q["source"]
+                        dst = q["destination"]
+                        hour = q["departure_hour"]
+                        avoid_nodes = set(q.get("avoid_nodes", []))
+                        avoid_edges = {tuple(edge) for edge in q.get("avoid_edges", [])}
+                        
+                        print(f"\n[{q['id'].replace('_', ' ').title()}] {q['name']}")
+                        print(f"Running query from {src} to {dst} at {hour}:00...")
+                        if avoid_nodes:
+                            print(f"Avoiding nodes: {avoid_nodes}")
+                        if avoid_edges:
+                            print(f"Avoiding edges: {avoid_edges}")
+                    else:
+                        print(f"Configuration {case_choice} is not defined in queries.json.")
+                        continue
+                        
+                elif case_choice == '5':
                     src_input = input("Enter source node ID: ").strip()
                     dst_input = input("Enter destination node ID: ").strip()
                     if not src_input or not dst_input: continue
