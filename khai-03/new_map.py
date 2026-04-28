@@ -312,6 +312,8 @@ def generate_nodes(num_nodes=NUM_NODES, seed=SEED):
     for hood_idx, count in enumerate(nodes_per_hood):
         c_lat, c_lon = centers[hood_idx]
         attempts, generated = 0, 0
+        
+        # Max attempts to prevent infinite loop if area is over-saturated
         while generated < count and attempts < count * 20:
             attempts += 1
             lat = max(LAT_MIN, min(LAT_MAX, rng.gauss(c_lat, 0.008)))
@@ -326,6 +328,9 @@ def generate_nodes(num_nodes=NUM_NODES, seed=SEED):
             spatial_grid.insert(lat, lon, node)
             node_id += 1
             generated += 1
+            
+        if generated < count:
+            print(f"Warning: Saturated space! Capped neighborhood {hood_idx} at {generated}/{count} nodes due to 50m spacing.")
             
     enforce_unique_names(nodes)
     print(f"Generated {len(nodes)} nodes.")
