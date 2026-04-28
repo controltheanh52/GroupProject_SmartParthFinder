@@ -19,20 +19,55 @@ from solution import Node, Edge
 # Configuration
 # =============================================================================
 
-# Region bounds (roughly a city-sized area, ~15km x 15km)
-LAT_MIN = 10.720
-LAT_MAX = 10.860
-LON_MIN = 106.620
-LON_MAX = 106.760
+# --- Region Bounds Configuration ---
+# What it is: 
+#   These 4 variables create a geographical "bounding box" (a rectangle) on the Earth.
+#   Currently set to coordinates near Ho Chi Minh City (~15.5km x 15km area).
+# Mechanism:
+#   Every generated map node is given a random coordinate uniformly distributed 
+#   within these min and max bounds. 
+# How to use/modify:
+#   1. Change Cities: Replace these with bounding coordinates of New York, London, etc.
+#   2. Expand Map Size: Increase the difference between MIN and MAX. 
+#      (Rule of thumb: 1 degree of latitude is roughly 111 km). 
+#      If you double the gap to 0.280, you get a ~30x30km map.
+#      *IMPORTANT*: If you expand the map significantly, remember to increase 
+#      `NUM_NODES` below so the intersections aren't spread too far apart!
 
-# Node generation
-NUM_NODES = 5000
-NUM_NEIGHBORHOODS = 20
-NODES_PER_NEIGHBORHOOD_MIN = 70
-NODES_PER_NEIGHBORHOOD_MAX = 130
-MIN_NODE_SPACING_METERS = 50  # minimum distance between any two nodes
+LAT_MIN = 10.720                              # Southernmost latitude boundary of the map
+LAT_MAX = 10.860                              # Northernmost latitude boundary of the map
+LON_MIN = 106.620                             # Westernmost longitude boundary of the map
+LON_MAX = 106.760                             # Easternmost longitude boundary of the map
 
-# Edge generation
+# --- Node Generation Configuration ---
+# What it is:
+#   Controls how many intersections (nodes) exist and how they are clustered.
+# Mechanism:
+#   The script places neighborhood "centers". Then it scatters nodes around these 
+#   centers using a Gaussian distribution, ensuring no two nodes are closer than MIN_NODE_SPACING_METERS.
+# How to use/modify:
+#   - Increase NUM_NODES for a denser map (more intersections/roads).
+#   - Increase NUM_NEIGHBORHOODS to distribute the city into more distinct separate hubs.
+#   - Tweak NODES_PER_NEIGHBORHOOD constraints to control the density of each hub vs the connecting areas.
+
+NUM_NODES = 5000                              # Total number of nodes (intersections/locations) to generate
+NUM_NEIGHBORHOODS = 20                        # Number of dense clusters (neighborhoods) in the map
+NODES_PER_NEIGHBORHOOD_MIN = 70               # Minimum number of nodes clustered within a single neighborhood
+NODES_PER_NEIGHBORHOOD_MAX = 130              # Maximum number of nodes clustered within a single neighborhood
+MIN_NODE_SPACING_METERS = 50                  # Minimum distance between any two nodes (prevents overlapping)
+
+# --- Edge (Road) Generation Configuration ---
+# What it is:
+#   Dictates how the roads (edges) connect the intersections together.
+# Mechanism:
+#   Builds a basic network where each node connects to geographically closest K neighbors (KNN_K).
+#   Adds some random mid-range links (REGIONAL_RADIUS/PROBABILITY) and long-distance links for highways.
+#   Randomly decides if roads are one-way or two-way based on BIDIRECTIONAL_RATIO.
+# How to use/modify:
+#   - Increase KNN_K (e.g. to 5 or 6) to make the map much more interconnected (less dead-ends).
+#   - Adjust HIGHWAY_COUNT_RATIO to add more/fewer long fast roads across the city.
+#   - Set BIDIRECTIONAL_RATIO = 1.0 if you want every single road to be two-way.
+
 KNN_K = 4                     # each node connects to k nearest neighbors
 REGIONAL_RADIUS_M = 1500      # connect nodes within this radius with some probability
 REGIONAL_PROBABILITY = 0.008  # probability of regional connection per pair in radius
@@ -41,12 +76,28 @@ HIGHWAY_MIN_DIST_M = 5000     # minimum distance for highway edges
 HIGHWAY_MAX_DIST_M = 15000    # maximum distance for highway edges
 BIDIRECTIONAL_RATIO = 0.70    # fraction of edges that are two-way
 
-# Speed profiles (km/h) by road type
+# --- Speed Profiles Configuration ---
+# What it is:
+#   Specifies the base speed limits for roads depending on their length.
+# Mechanism:
+#   Short roads are deemed 'local' (slower), medium are 'city', long ones are 'highways'.
+# How to use/modify:
+#   - Adjust speeds to see how shortest-time path algorithms alter routes.
+
 SPEED_LOCAL = 30       # short edges (< 1 km)
 SPEED_CITY = 50        # medium edges (1-5 km)
 SPEED_HIGHWAY = 90     # long edges (> 5 km)
 
-# Congestion multipliers per hour (index = hour 0-23)
+# --- Congestion Multipliers Configuration ---
+# What it is:
+#   Simulates the 24-hour traffic conditions using multipliers.
+# Mechanism:
+#   The base travel time is multiplied by the factor for the respective hour (0-23).
+#   Values > 1.0 mean traffic (slower), values < 1.0 mean clear roads.
+#   CONGESTION_VARIATION adds random noise (±) to make it more realistic so not every road is identical.
+# How to use/modify:
+#   - Change the multipliers to create different rush hours (e.g. a massive spike at element 8 for 8 AM).
+
 CONGESTION_PROFILE = [
     0.82, 0.80, 0.80, 0.82, 0.85, 0.90,  # 0-5:  night (low traffic)
     1.10, 1.80, 2.20, 1.30, 1.10, 1.15,  # 6-11: morning rush peaks at 7-8
@@ -57,7 +108,11 @@ CONGESTION_PROFILE = [
 # Congestion variation range (±)
 CONGESTION_VARIATION = 0.12
 
-# Random seed for reproducibility
+# --- Random Seed Configuration ---
+# What it is/Mechanism: 
+#   Fixes the RNG (Random Number Generator) so multiple runs produce the EXACT SAME map instead of randomizing every time.
+# How to use/modify:
+#   - Change this integer to any other number to generate a completely new, differently shaped but equally sized city.
 SEED = 42
 
 STREET_NAMES = [
