@@ -90,7 +90,7 @@ SPEED_HIGHWAY = 90     # long edges (> 5 km)
 
 # --- Congestion Multipliers Configuration ---
 # What it is:
-#   Simulates the 24-hour traffic conditions using multipliers.
+#   An array of 24 multipliers representing traffic baseline conditions for hours 0 (midnight) to 23 (11 PM).
 # Mechanism:
 #   The base travel time is multiplied by the factor for the respective hour (0-23).
 #   Values > 1.0 mean traffic (slower), values < 1.0 mean clear roads.
@@ -105,7 +105,15 @@ CONGESTION_PROFILE = [
     2.30, 1.50, 1.20, 1.10, 0.95, 0.88,  # 18-23: evening rush peaks at 18, tapers
 ]
 
-# Congestion variation range (±)
+# --- Congestion Variation Range (±) ---
+# What it is: 
+#   Random "noise" injected into the traffic profile above to make every single street unique.
+# Mechanism: 
+#   If CONGESTION_VARIATION is 0.12, the script randomly adds or subtracts up to 12% 
+#   from the CONGESTION_PROFILE value for each street independently.
+# Result: 
+#   Two side-by-side streets won't have the exact same 2.20 multiplier; one might get 2.11, the other 2.31.
+#   This forces the shortest-path algorithm to dynamically pick alternate routes rather than tieing evenly.
 CONGESTION_VARIATION = 0.12
 
 # --- Random Seed Configuration ---
@@ -262,12 +270,22 @@ def generate_travel_times(distance_m, rng):
 
     Base time = distance / speed, then scaled by congestion profile per hour.
     """
+    # Step 1: Figure out the 'ideal' speed limits based on distance alone (e.g. 5km+ is 90kmh highway)
     base_speed_kmh = get_base_speed(get_road_type(distance_m))
+    
+    # Step 2: Convert meters to km, then kmh to time in minutes
     base_time_min = (distance_m / 1000.0) / base_speed_kmh * 60.0
+    
     times = []
+    # Step 3: For every single hour from 0 to 23...
     for hour in range(24):
+        # Step 4: Pick out the multiplier for that hour, and apply the random +/- variance noise
+        # Note: The `max(0.5, ...)` line prevents the road from miraculously becoming 10x faster than the speed limit
         factor = max(0.5, CONGESTION_PROFILE[hour] + rng.uniform(-CONGESTION_VARIATION, CONGESTION_VARIATION))
+        
+        # Step 5: Multiply the 'base clear road time' by the traffic multiplier 
         times.append(round(base_time_min * factor, 2))
+        
     return times
 
 def generate_nodes(num_nodes=NUM_NODES, seed=SEED):
